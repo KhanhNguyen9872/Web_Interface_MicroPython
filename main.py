@@ -35,6 +35,7 @@ from lib import search_url,send_response,write_file,info_device,show_password,pr
 from config import ap_web_port,auto_connect
 from ure import search
 from program import program,hello_world
+from os import uname
 try:
   import usocket as socket
 except:
@@ -88,7 +89,7 @@ while 1:
         with open("/www/not_connected.html",'r') as f:
           response=str(f.read())
       with open("/www/button_homepage.html",'r') as f:
-        response+=str(f.read())
+        response+=str(f.read().format(str(uname()[1].upper())))
       send_response(conn,response)
     elif url=="khanhnguyen9872":
       configure(conn,request,url)
