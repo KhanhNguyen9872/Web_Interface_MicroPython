@@ -73,6 +73,7 @@ while 1:
     except OSError:
       pass
     if "HTTP" not in request:
+      print('Close: '+str(addr))
       conn.close()
       continue
     conn.settimeout(None)
@@ -166,8 +167,7 @@ while 1:
       except:
         pass
       not_found(conn,url)
-    del addr
-    print('Connection closed!')
+    print('Close: '+str(addr))
     conn.close()
   except ValueError as e:
     print("Error: "+str(e))
@@ -175,10 +175,11 @@ while 1:
     print("Error: "+str(e))
   except OSError:
     conn.close()
-    print('Connection closed!')
+    print('Close: '+str(addr))
   except KeyboardInterrupt:
     print("Exiting...")
     break
+
 
 
 
