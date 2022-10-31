@@ -76,16 +76,16 @@ def process(conn,ssid,password):
       response=str(f.read().format(str(ssid),str(wifi.config('essid'))))
   else:
     timeout=int(int(config.timeout)*4)
-    print("Connecting...")
+    print("Connecting to {}...".format(ssid))
     wifi.active(False)
     wifi.active(True)
     wifi.connect(ssid,password)
     count=0
     while str(wifi.isconnected())=="False":
-      sleep(0.25)
+      sleep(0.24)
       Pin(2,Pin.IN)
       count+=1
-      sleep(0.25)
+      sleep(0.24)
       Pin(2,Pin.OUT)
       if int(count)==int(timeout):
         break
@@ -109,14 +109,14 @@ def auth(conn):
 def verify_auth(conn,request,url,num):
   match=search("password=([^&]*)",request)
   if match is None:
-    not_found(conn,url)
+    response_error(conn,"Admin password is empty!")
     return False
   try:
     password=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
   except Exception:
     password=str(match.group(1).replace("%3F","?").replace("%21","!"))
   if len(password)==0:
-    not_found(conn,url)
+    response_error(conn,"Admin password is empty!")
     return False
   print("Input Admin password: "+str(password))
   if str(password)==str(config.admin_password):
@@ -133,10 +133,10 @@ def verify_auth(conn,request,url,num):
         print("Restart...")
         reset()
     except:
-      not_found(conn,url)
+      response_error(conn,"Authentication ERROR!")
   else:
     print("Password ERROR")
-    not_found(conn,url)
+    response_error(conn,"Authentication ERROR!")
 def settings(conn):
   print("Settings")
   with open("/www/settings.html",'r') as f:
@@ -153,10 +153,7 @@ def save_settings(conn,request,url):
     try:
       match=search("{0}=([^&]*)".format(str(i)),request)
     except:
-      not_found(conn,url)
-      return False
-    if match is None:
-      not_found(conn,url)
+      response_error(conn,"Label {0} is empty".format(i))
       return False
     try:
       id=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
@@ -205,3 +202,4 @@ def save_settings(conn,request,url):
   print("Saved settings!")
   with open("/www/save_settings.html",'r') as f:
     send_response(conn,str(f.read()))
+

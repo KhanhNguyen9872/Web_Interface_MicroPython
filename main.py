@@ -20,10 +20,14 @@ def configure(conn,request,url):
     password=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
   except Exception:
     password=str(match.group(1).replace("%3F","?").replace("%21","!"))
+  if (str(password)=="") or (len(password)>7):
+    pass
+  else:
+    response_error(conn,"Password must be equal to or greater than 8. If your wifi is open, you must not enter the password dialog")
   try:
     ssid=str(wifi_name[id])
   except:
-    not_found(conn,url)
+    response_error(conn,"The SSID you selected was not found from there")
   del id
   print("Selected SSID: "+ssid)
   print("Input Password: "+password)
@@ -31,7 +35,7 @@ def configure(conn,request,url):
     send_response(conn,str(f.read().format(str(ssid))))
 wifi=network.WLAN(network.STA_IF)
 wifi.active(True)
-from lib import search_url,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found
+from lib import search_url,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found
 from config import ap_web_port,auto_connect
 from ure import search
 from program import program,hello_world
@@ -69,10 +73,11 @@ while 1:
     except OSError:
       pass
     if "HTTP" not in request:
+      conn.close()
       continue
     conn.settimeout(None)
     url=str(search_url(request))
-    print("URL: \"{}\"".format(url))
+    print("URL: \"http://{}/{}\"".format(str(hotspot.ifconfig()[0]),url))
     if url=="":
       if str(wifi.isconnected())=="True":
         if ((first_boot==1) and (str(auto_connect)=="0")) or ((first_boot==1) and (str(auto_connect.upper())=="FALSE")):
@@ -139,7 +144,7 @@ while 1:
       try:
         print("Verify auth...")
         verify_auth(conn,request,url,num)
-      except NameError:
+      except:
         not_found(conn,url)
     elif url=="info":
       try:
@@ -174,5 +179,6 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
+
 
 
