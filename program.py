@@ -1,9 +1,4 @@
-import network
-from time import sleep
-from machine import Pin
-from lib import send_response,not_found
-hotspot=network.WLAN(network.AP_IF)
-wifi=network.WLAN(network.STA_IF)
+from lib import send_response,not_found,sleep,Pin,network,hotspot,wifi
 def program(conn,url):
   print("Show list program")
   with open("/www/head.html",'r') as f:
@@ -20,3 +15,4 @@ def program(conn,url):
     pass
 def hello_world(conn,url):
   send_response(conn,"Hello world!")
+

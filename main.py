@@ -33,20 +33,17 @@ def configure(conn,request,url):
   print("Input Password: "+password)
   with open("/www/selected_wifi.html",'r') as f:
     send_response(conn,str(f.read().format(str(ssid))))
-wifi=network.WLAN(network.STA_IF)
+global wifi_name,wifi_signal,wifi_security,num
+from lib import uname,search_url,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found,search,port,wifi
 wifi.active(True)
-from lib import search_url,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found
-from config import ap_web_port,auto_connect
-from ure import search
+hotspot.active(True)
+from config import auto_connect
 from program import program,hello_world
-from os import uname
 try:
   import usocket as socket
 except:
   import socket
-global wifi_name,wifi_signal,wifi_security,port,num
 first_boot=1
-port=int(ap_web_port)
 pass_key=0
 print("Starting web [{0}:{1}]".format(str(hotspot.ifconfig()[0]),str(port)))
 try:
@@ -55,11 +52,10 @@ try:
   s.bind(('',port))
   s.listen(5)
 except OSError as e:
+  print("Restart...")
   machine.reset()
 while 1:
   try:
-    hotspot.active(True)
-    wifi.active(True)
     gc.collect()
     Pin(2,Pin.IN)
     conn,addr=s.accept()
@@ -112,14 +108,14 @@ while 1:
       for i in range (0,len(wifi_name),1):
         if (wifi_hidden[i]==0):
           with open("/www/wifi_select.html",'r') as f:
-            response+=str(f.read().format(wifi_name[i], wifi_signal[i], i))
+            response+=str(f.read().format(wifi_name[i],wifi_signal[i],i))
       with open("/www/button_find_wifi.html",'r') as f:
         response+=str(f.read())
       send_response(conn,response)
-      del response, wifi_hidden
+      del response,wifi_hidden
     elif url=="process":
       try:
-        del wifi_name, wifi_signal
+        del wifi_name,wifi_signal
         process(conn,ssid,password)
       except:
         not_found(conn,url)
@@ -127,14 +123,14 @@ while 1:
       program(conn,url)
     elif url=="show_password":
       try:
-        del wifi_name, wifi_signal
+        del wifi_name,wifi_signal
       except:
         pass
       num=int(1)
       auth(conn)
     elif url=="settings":
       try:
-        del wifi_name, wifi_signal
+        del wifi_name,wifi_signal
       except:
         pass
       num=int(2)
@@ -149,7 +145,7 @@ while 1:
         not_found(conn,url)
     elif url=="info":
       try:
-        del wifi_name, wifi_signal
+        del wifi_name,wifi_signal
       except:
         pass
       info_device(conn,request)
@@ -163,7 +159,7 @@ while 1:
       hello_world(conn,url)
     else:
       try:
-        del wifi_name, wifi_signal
+        del wifi_name,wifi_signal
       except:
         pass
       not_found(conn,url)
@@ -179,6 +175,7 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
+
 
 
 

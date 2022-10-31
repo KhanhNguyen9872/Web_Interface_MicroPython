@@ -1,8 +1,7 @@
 import network,config
 from time import sleep
 from ure import search
-from machine import Pin
-from machine import reset
+from machine import Pin,reset
 from os import uname
 hotspot=network.WLAN(network.AP_IF)
 wifi=network.WLAN(network.STA_IF)
@@ -21,8 +20,7 @@ def search_url(request):
     return url
 def send_response(conn,payload,status_code=200):
   content_length=len(payload)
-  conn.sendall("HTTP/1.0 {} OK\r\n".format(status_code))
-  conn.sendall("Content-Type: text/html\r\n")
+  conn.sendall("HTTP/1.0 {} OK\r\nContent-Type: text/html\r\n".format(status_code))
   if content_length is not None:
     conn.sendall("Content-Length: {}\r\n".format(content_length))
   conn.sendall("\r\n")
@@ -34,14 +32,20 @@ def not_found(conn,url):
   with open("/www/404.html",'r') as f:
     send_response(conn,str(f.read().format(str(uname()[1].upper()),str(hotspot.ifconfig()[0]),str(port))),status_code=404)
 def write_file(name,password):
-  file=open("/wifi.txt","a",encoding='utf-8')
-  file.write(str(name)+" - "+str(password)+"\n")
-  file.close()
+  with open("/wifi.txt",'r') as f:
+    temp=str(f.read()).split("\n")
+  temp2=str(str(name)+" - "+str(password))
+  if temp2 in temp:
+    pass
+  else:
+    file=open("/wifi.txt","a",encoding='utf-8')
+    file.write(str(name)+" - "+str(password)+"\n")
+    file.close()
 def info_device(conn,request):
-  print("View info device")
+  print("View info request")
   request=request.decode('utf-8')
   html="""{0}<pre>
-""".format(str(head("Info your device")))
+""".format(str(head("Info your request")))
   for i in [v.strip() for v in request.replace('\r\n', ';').split(';') if v.strip()]:
     if str(i)=="":
       continue
@@ -198,8 +202,6 @@ def save_settings(conn,request,url):
   for i in range(0,len(memory_var),1):
     file.write("{0}=\"{1}\"\n".format(memory_var[i],url[i]))
   file.close()
-  del url, memory_var, number
   print("Saved settings!")
   with open("/www/save_settings.html",'r') as f:
     send_response(conn,str(f.read()))
-
