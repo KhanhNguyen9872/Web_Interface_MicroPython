@@ -1,44 +1,10 @@
-def configure(conn,request,url):
-  global ssid,password
-  id=int(-1)
-  match=search("ssid=([^&]*)",request)
-  if match is None:
-    not_found(conn,url)
-    return False
-  try:
-    id=int(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
-  except Exception:
-    id=int(match.group(1).replace("%3F","?").replace("%21","!"))
-  if id==int(-1):
-    not_found(conn,url)
-    return False
-  match=search("password=([^&]*)",request)
-  if match is None:
-    not_found(conn,url)
-    return False
-  try:
-    password=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
-  except Exception:
-    password=str(match.group(1).replace("%3F","?").replace("%21","!"))
-  if (str(password)=="") or (len(password)>7):
-    pass
-  else:
-    response_error(conn,"Password must be equal to or greater than 8. If your wifi is open, you must not enter the password dialog")
-  try:
-    ssid=str(wifi_name[id])
-  except:
-    response_error(conn,"The SSID you selected was not found from there")
-  del id
-  print("Selected SSID: "+ssid)
-  print("Input Password: "+password)
-  with open("/www/selected_wifi.html",'r') as f:
-    send_response(conn,str(f.read().format(str(ssid))))
-global wifi_name,wifi_signal,wifi_security,num
-from lib import uname,search_url,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found,search,port,wifi
+global num
+from lib import uname,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found,search,port,wifi
 wifi.active(True)
 hotspot.active(True)
 from config import auto_connect
 from program import program,hello_world
+from lib2 import wifi_scanning,configure,search_url
 try:
   import usocket as socket
 except:
@@ -94,29 +60,19 @@ while 1:
         response+=str(f.read().format(str(uname()[1].upper())))
       send_response(conn,response)
     elif url=="khanhnguyen9872":
-      configure(conn,request,url)
+      try:
+        ssid,password,response=configure(conn,request,url,wifi_name,wifi_signal)
+        send_response(conn,response)
+      except NameError:
+        not_found(conn,url)
     elif url=="find_wifi":
-      print("Searching wifi...")
-      list_wifi_tuple=[x for x in wifi.scan()]
-      wifi_name=[x[0].decode('utf-8') for x in list_wifi_tuple]
-      wifi_signal=[x[3] for x in list_wifi_tuple]
-      wifi_hidden=[x[5] for x in list_wifi_tuple]
-      del list_wifi_tuple
-      print("Completed wifi search!")
-      with open("/www/head_find_wifi.html",'r') as f:
-        response=str(f.read())
-      for i in range (0,len(wifi_name),1):
-        if (wifi_hidden[i]==0):
-          with open("/www/wifi_select.html",'r') as f:
-            response+=str(f.read().format(wifi_name[i],wifi_signal[i],i))
-      with open("/www/button_find_wifi.html",'r') as f:
-        response+=str(f.read())
+      wifi_name,wifi_signal,response=wifi_scanning(conn,wifi)
       send_response(conn,response)
-      del response,wifi_hidden
     elif url=="process":
       try:
         del wifi_name,wifi_signal
-        process(conn,ssid,password)
+        response=process(conn,ssid,password)
+        send_response(conn,response)
       except:
         not_found(conn,url)
     elif url=="program":
@@ -138,10 +94,10 @@ while 1:
     elif url=="save_settings":
       save_settings(conn,request,url)
     elif url=="auth":
+      print("Verify auth...")
       try:
-        print("Verify auth...")
         verify_auth(conn,request,url,num)
-      except:
+      except NameError:
         not_found(conn,url)
     elif url=="info":
       try:
@@ -175,6 +131,8 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
+
+
 
 
 
