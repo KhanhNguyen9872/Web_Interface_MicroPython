@@ -11,5 +11,18 @@ DEMO Web: [here](https://khanhnguyen9872.github.io/Web_Interface_MicroPython)
 - Flash size 4MB or up
 - Flash latest version of MicroPython (2MiB+ flash)
 
+# Base file, folder
+```
+/www
+/boot.py
+/config.py
+/lib.py
+/lib2.py
+/main.py
+/program.py
+/program.txt
+/wifi.txt
+```
+
 # TESTED
 - ESP8266 (4MB Flash size)
