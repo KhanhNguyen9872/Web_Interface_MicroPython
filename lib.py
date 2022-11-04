@@ -79,7 +79,7 @@ def send_response(conn,payload,status_code=200):
 def not_found(conn,url):
   print("Not found: "+str(url))
   with open("/www/404.html",'r') as f:
-    send_response(conn,str(f.read().format(str(uname()[1].upper()),str(hotspot.ifconfig()[0]),str(port))),status_code=404)
+    send_response(conn,str(f.read().format(uname()[1].upper(),hotspot.ifconfig()[0],str(port))),status_code=404)
 def info_device(conn,request):
   print("View info request")
   request=request.decode('utf-8')
@@ -175,12 +175,11 @@ def verify_auth(conn,request,url,num):
         settings(conn)
       elif int(num)==3:
         print("Restart...")
+        send_response(conn,"Restarting...")
         reset()
     except NameError:
       response_error(conn,"Authentication ERROR!")
   else:
     print("Password ERROR")
     response_error(conn,"Authentication ERROR!")
-
-
 

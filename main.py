@@ -11,11 +11,11 @@ except:
   import socket
 first_boot=1
 pass_key=0
-print("Starting web [{0}:{1}]".format(str(hotspot.ifconfig()[0]),str(port)))
+print("Starting web [{0}:{1}]".format(hotspot.ifconfig()[0],str(port)))
 try:
   s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
   s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-  s.bind(('',port))
+  s.bind((hotspot.ifconfig()[0],port))
   s.listen(5)
 except OSError as e:
   print("Restart...")
@@ -40,7 +40,7 @@ while 1:
       continue
     conn.settimeout(None)
     url=str(search_url(request))
-    print("URL: \"http://{}/{}\"".format(str(hotspot.ifconfig()[0]),url))
+    print("URL: \"http://{}/{}\"".format(hotspot.ifconfig()[0],url))
     if url=="":
       if str(wifi.isconnected())=="True":
         if ((first_boot==1) and (str(auto_connect)=="0")) or ((first_boot==1) and (str(auto_connect.upper())=="FALSE")):
@@ -51,13 +51,13 @@ while 1:
             response=str(f.read())
         else:
           with open("/www/connected.html",'r') as f:
-            response=str(f.read().format(wifi.config('essid'),str(wifi.ifconfig()[0]),str(wifi.ifconfig()[1]),str(wifi.ifconfig()[2]),str(wifi.ifconfig()[3]),str("wifi_disconnect"),str("Disconnect")))
+            response=str(f.read().format(wifi.config('essid'),wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"wifi_disconnect","Disconnect"))
       else:
         first_boot=0
         with open("/www/not_connected.html",'r') as f:
           response=str(f.read())
       with open("/www/button_homepage.html",'r') as f:
-        response+=str(f.read().format(str(uname()[1].upper())))
+        response+=str(f.read().format(uname()[1].upper()))
       send_response(conn,response)
     elif url=="khanhnguyen9872":
       try:
@@ -131,10 +131,6 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
-
-
-
-
-
-
+  except:
+    pass
 
