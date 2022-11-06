@@ -11,7 +11,7 @@ except:
   pass
 hotspot.active(True)
 gc.collect()
-global num
+global num,password
 from lib import *
 wifi.active(True)
 hotspot.active(True)
@@ -34,4 +34,5 @@ except OSError as e:
   print("Restart...")
   machine.reset()
 car_remote_dict={"up":"print(\"up\")","down":"print(\"down\")","left":"print(\"left\")","right":"print(\"right\")","end_up":"print(\"end_up\")","end_down":"print(\"end_down\")","end_left":"print(\"end_left\")","end_right":"print(\"end_right\")"}
+
 

@@ -12,6 +12,43 @@ def send_response(conn,payload,status_code=200):
   if content_length>0:
     conn.sendall(payload)
   conn.close()
+def info_device(conn,request):
+  print("View info request")
+  request=request.decode('utf-8')
+  html="""{}<pre>
+""".format(str(head("Info your request")))
+  for i in [v.strip() for v in request.replace('\r\n', ';').split(';') if v.strip()]:
+    if str(i)=="":
+      continue
+    else:
+      html+="""{}
+""".format(str(i))
+  html+="""</pre>
+{}""".format(str(last(port)))
+  send_response(conn,html)
+def auth(conn):
+  print("Password required!")
+  with open("/www/auth.html",'r') as f:
+    send_response(conn,str(f.read()))
+def show_password(conn):
+  print("Show password")
+  html="""{}<pre>
+""".format(str(head("Show password")))
+  file=open("/wifi.txt","r")
+  count=0
+  for i in file.readlines():
+    if str(i)=="":
+      continue
+    else:
+      html+="""{}
+""".format(str(i))
+      count+=1
+  if count==0:
+    html+="""No passwords are saved here
+"""
+  html+="""</pre>
+</body></html>"""
+  send_response(conn,html)
 def not_found(conn,url):
   print("Not found: "+str(url))
   with open("/www/404.html",'r') as f:
@@ -95,4 +132,3 @@ def wifi_scanning(conn,wifi):
     response+=str(f.read())
   del wifi_hidden
   return wifi_name,wifi_signal,response
-

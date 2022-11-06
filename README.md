@@ -19,6 +19,7 @@ DEMO Web: [here](https://khanhnguyen9872.github.io/Web_Interface_MicroPython)
 /lib.py
 /lib2.py
 /main.py
+/md5.py
 /program.py
 /program.txt
 /wifi.txt

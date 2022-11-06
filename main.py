@@ -4,6 +4,7 @@ while 1:
     Pin(2,Pin.IN)
     conn,addr=s.accept()
     Pin(2,Pin.OUT)
+    conn.settimeout(None)
     request=b""
     try:
       while "\r\n\r\n" not in request:
@@ -11,17 +12,16 @@ while 1:
     except OSError:
       pass
     if "HTTP" not in request:
-      print('Close: '+str(addr))
       conn.close()
       continue
-    conn.settimeout(None)
     url=str(search_url(request))
     try:
-      int(num)
-      exec(car_remote_dict[url])
-      send_response(conn,"")
-      conn.close()
-      continue
+      if password==config.admin_passmd5:
+        exec(car_remote_dict[url])
+        conn.close()
+        continue
+      else:
+        int("k")
     except:
       print("Accept: "+str(addr))
     print("URL: \"http://{}/{}\"".format(hotspot.ifconfig()[0],url))
@@ -80,7 +80,7 @@ while 1:
     elif url=="auth":
       print("Verify auth...")
       try:
-        verify_auth(conn,request,url,num)
+        password=str(verify_auth(conn,request,url,num,port))
       except NameError:
         not_found(conn,url)
     elif url=="info":
@@ -118,3 +118,5 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
+  except:
+    pass
