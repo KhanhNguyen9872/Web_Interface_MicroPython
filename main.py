@@ -1,33 +1,9 @@
-global num
-from lib import uname,response_error,send_response,write_file,info_device,show_password,process,auth,verify_auth,settings,save_settings,not_found,search,port,wifi
-wifi.active(True)
-hotspot.active(True)
-from config import auto_connect
-from program import program,hello_world
-from lib2 import wifi_scanning,configure,search_url
-try:
-  import usocket as socket
-except:
-  import socket
-first_boot=1
-pass_key=0
-print("Starting web [{0}:{1}]".format(hotspot.ifconfig()[0],str(port)))
-try:
-  s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-  s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
-  s.bind((hotspot.ifconfig()[0],port))
-  s.listen(5)
-except OSError as e:
-  print("Restart...")
-  machine.reset()
 while 1:
   try:
     gc.collect()
     Pin(2,Pin.IN)
     conn,addr=s.accept()
     Pin(2,Pin.OUT)
-    conn.settimeout(3.0)
-    print("Accept: "+str(addr))
     request=b""
     try:
       while "\r\n\r\n" not in request:
@@ -40,6 +16,14 @@ while 1:
       continue
     conn.settimeout(None)
     url=str(search_url(request))
+    try:
+      int(num)
+      exec(car_remote_dict[url])
+      send_response(conn,"")
+      conn.close()
+      continue
+    except:
+      print("Accept: "+str(addr))
     print("URL: \"http://{}/{}\"".format(hotspot.ifconfig()[0],url))
     if url=="":
       if str(wifi.isconnected())=="True":
@@ -82,14 +66,14 @@ while 1:
         del wifi_name,wifi_signal
       except:
         pass
-      num=int(1)
+      num=1
       auth(conn)
     elif url=="settings":
       try:
         del wifi_name,wifi_signal
       except:
         pass
-      num=int(2)
+      num=2
       auth(conn)
     elif url=="save_settings":
       save_settings(conn,request,url)
@@ -106,13 +90,16 @@ while 1:
         pass
       info_device(conn,request)
     elif url=="wifi_disconnect":
-      num=int(0)
+      num=0
       auth(conn)
     elif url=="restart":
-      num=int(3)
+      num=3
       auth(conn)
     elif url=="hello_world":
       hello_world(conn,url)
+    elif url=="car_remote":
+      num=4
+      auth(conn)
     else:
       try:
         del wifi_name,wifi_signal
@@ -131,6 +118,3 @@ while 1:
   except KeyboardInterrupt:
     print("Exiting...")
     break
-  except:
-    pass
-

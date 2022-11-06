@@ -2,6 +2,20 @@ from ure import search
 import config,network
 from os import uname
 hotspot=network.WLAN(network.AP_IF)
+port=str(config.ap_web_port)
+def send_response(conn,payload,status_code=200):
+  content_length=len(payload)
+  conn.sendall("HTTP/1.0 {} OK\r\nContent-Type: text/html\r\n".format(status_code))
+  if content_length is not None:
+    conn.sendall("Content-Length: {}\r\n".format(content_length))
+  conn.sendall("\r\n")
+  if content_length>0:
+    conn.sendall(payload)
+  conn.close()
+def not_found(conn,url):
+  print("Not found: "+str(url))
+  with open("/www/404.html",'r') as f:
+    send_response(conn,str(f.read().format(uname()[1].upper(),hotspot.ifconfig()[0],str(port))),status_code=404)
 def write_file(name,password):
   with open("/wifi.txt",'r') as f:
     temp=str(f.read()).split("\n")
@@ -81,3 +95,4 @@ def wifi_scanning(conn,wifi):
     response+=str(f.read())
   del wifi_hidden
   return wifi_name,wifi_signal,response
+

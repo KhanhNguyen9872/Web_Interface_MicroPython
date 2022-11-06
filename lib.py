@@ -3,7 +3,8 @@ from time import sleep
 from ure import search
 from machine import Pin,reset
 from os import uname
-from lib2 import head,last,response_error,write_file
+from lib2 import *
+from program import *
 hotspot=network.WLAN(network.AP_IF)
 wifi=network.WLAN(network.STA_IF)
 port=int(config.ap_web_port)
@@ -17,16 +18,16 @@ def save_settings(conn,request,url):
   url=[]
   for i in memory_var:
     try:
-      match=search("{0}=([^&]*)".format(str(i)),request)
+      match=search("{}=([^&]*)".format(str(i)),request)
     except:
-      response_error(conn,"Label {0} is empty".format(i))
+      response_error(conn,"Label {} is empty".format(i))
       return False
     try:
       id=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
     except Exception:
       id=str(match.group(1).replace("%3F","?").replace("%21","!"))
     if str(id)=="":
-      response_error(conn,"Label {0} is empty".format(i))
+      response_error(conn,"Label {} is empty".format(i))
       return False
     else:
       if (str(i)=="ap_password") and ((len(str(id))<8) or (len(str(id))>63)):
@@ -62,41 +63,28 @@ def save_settings(conn,request,url):
           url.append(str(id))
   file=open("/config.py","w",encoding='utf-8')
   for i in range(0,len(memory_var),1):
-    file.write("{0}=\"{1}\"\n".format(memory_var[i],url[i]))
+    file.write("{}=\"{}\"\n".format(memory_var[i],url[i]))
   file.close()
   print("Saved settings!")
   with open("/www/save_settings.html",'r') as f:
     send_response(conn,str(f.read()))
-def send_response(conn,payload,status_code=200):
-  content_length=len(payload)
-  conn.sendall("HTTP/1.0 {} OK\r\nContent-Type: text/html\r\n".format(status_code))
-  if content_length is not None:
-    conn.sendall("Content-Length: {}\r\n".format(content_length))
-  conn.sendall("\r\n")
-  if content_length>0:
-    conn.sendall(payload)
-  conn.close()
-def not_found(conn,url):
-  print("Not found: "+str(url))
-  with open("/www/404.html",'r') as f:
-    send_response(conn,str(f.read().format(uname()[1].upper(),hotspot.ifconfig()[0],str(port))),status_code=404)
 def info_device(conn,request):
   print("View info request")
   request=request.decode('utf-8')
-  html="""{0}<pre>
+  html="""{}<pre>
 """.format(str(head("Info your request")))
   for i in [v.strip() for v in request.replace('\r\n', ';').split(';') if v.strip()]:
     if str(i)=="":
       continue
     else:
-      html+="""{0}
+      html+="""{}
 """.format(str(i))
   html+="""</pre>
-{0}""".format(str(last(port)))
+{}""".format(str(last(port)))
   send_response(conn,html)
 def show_password(conn):
   print("Show password")
-  html="""{0}<pre>
+  html="""{}<pre>
 """.format(str(head("Show password")))
   file=open("/wifi.txt","r")
   count=0
@@ -104,7 +92,7 @@ def show_password(conn):
     if str(i)=="":
       continue
     else:
-      html+="""{0}
+      html+="""{}
 """.format(str(i))
       count+=1
   if count==0:
@@ -135,12 +123,12 @@ def process(conn,ssid,password):
     if int(count)==int(timeout):
       timeout=int(timeout/4)
       Pin(2,Pin.IN)
-      print("TIMEOUT {0}s: {1}".format(str(timeout),ssid))
+      print("TIMEOUT {}s: {}".format(str(timeout),ssid))
       with open("/www/cannot_connect.html",'r') as f:
         response=str(f.read().format(ssid,str(timeout)))
     else:
       Pin(2,Pin.OUT)
-      print("SUCCESS: {0}\nIP: {1}\nSubnet: {2}\nGateway: {3}\nDNS: {4}".format(ssid,wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3]))
+      print("SUCCESS: {}\nIP: {}\nSubnet: {}\nGateway: {}\nDNS: {}".format(ssid,wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3]))
       write_file(ssid,password)
       with open("/www/connected.html",'r') as f:
         response=str(f.read().format(ssid,wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"/","Home"))
@@ -164,22 +152,27 @@ def verify_auth(conn,request,url,num):
   print("Input Admin password: "+str(password))
   if str(password)==str(config.admin_password):
     try:
-      if int(num)==0:
+      if num==0:
         wifi.active(False)
         wifi.active(True)
         send_response(conn,"""<meta http-equiv='refresh' content='0; URL=/'>""")
-      elif int(num)==1:
+      elif num==1:
         show_password(conn)
-      elif int(num)==2:
+      elif num==2:
         del request,num,url
         settings(conn)
-      elif int(num)==3:
+      elif num==3:
         print("Restart...")
         send_response(conn,"Restarting...")
         reset()
+      ## PROGRAM
+      elif num==4:
+        car_remote(conn,url)
     except NameError:
       response_error(conn,"Authentication ERROR!")
   else:
     print("Password ERROR")
     response_error(conn,"Authentication ERROR!")
+
+
 
