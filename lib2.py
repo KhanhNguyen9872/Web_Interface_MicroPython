@@ -3,6 +3,13 @@ import config,network
 from os import uname
 hotspot=network.WLAN(network.AP_IF)
 port=str(config.ap_web_port)
+def remove():
+  a=["wifi_name","wifi_signal","html","list_program","a"]
+  for i in a:
+    try:
+      exec(f"del {a}") 
+    except:
+      pass
 def send_response(conn,payload,status_code=200):
   content_length=len(payload)
   conn.sendall("HTTP/1.0 {} OK\r\nContent-Type: text/html\r\n".format(status_code))
@@ -132,3 +139,4 @@ def wifi_scanning(conn,wifi):
     response+=str(f.read())
   del wifi_hidden
   return wifi_name,wifi_signal,response
+

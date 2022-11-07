@@ -145,10 +145,8 @@ def verify_auth(conn,request,url,num,port):
       elif num==4:
         car_remote(conn,url,port)
     except NameError:
-      password=""
       response_error(conn,"Authentication ERROR!")
   else:
-    password=""
     print("Password ERROR")
     response_error(conn,"Authentication ERROR!")
-  return password
+

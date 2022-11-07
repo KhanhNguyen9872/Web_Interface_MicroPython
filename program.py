@@ -1,5 +1,5 @@
 from lib2 import *
-import network
+import network,config
 hotspot=network.WLAN(network.AP_IF)
 def program(conn,url):
   print("Show list program")
@@ -10,14 +10,14 @@ def program(conn,url):
   with open("/www/list_program.html",'r') as f:
     a=f.read()
   for i in list_program:
-    html+=a.format(str(i))
+    html+=a.format(i)
   send_response(conn,html)
-  try:
-    del html,list_program,a
-  except:
-    pass
+  remove()
 def hello_world(conn,url):
+  print("hello_world")
   send_response(conn,"Hello world!")
 def car_remote(conn,url,port):
+  print("car_remote")
   with open("/www/car_remote.html",'r') as f:
-    send_response(conn,str(f.read()).replace("{0}",hotspot.ifconfig()[0]).replace("{1}",str(port)))
+    send_response(conn,str(f.read()).replace("{0}",hotspot.ifconfig()[0]).replace("{1}",str(port)).replace("{2}",str(config.admin_passmd5)))
+

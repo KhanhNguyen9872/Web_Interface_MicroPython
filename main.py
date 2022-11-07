@@ -16,8 +16,9 @@ while 1:
       continue
     url=str(search_url(request))
     try:
-      if password==config.admin_passmd5:
-        exec(car_remote_dict[url])
+      password=url.split("!")
+      if password[1]==config.admin_passmd5:
+        exec(car_remote_dict[password[0]])
         conn.close()
         continue
       else:
@@ -62,32 +63,24 @@ while 1:
     elif url=="program":
       program(conn,url)
     elif url=="show_password":
-      try:
-        del wifi_name,wifi_signal
-      except:
-        pass
+      remove()
       num=1
       auth(conn)
     elif url=="settings":
-      try:
-        del wifi_name,wifi_signal
-      except:
-        pass
+      remove()
       num=2
       auth(conn)
     elif url=="save_settings":
       save_settings(conn,request,url)
     elif url=="auth":
+      remove()
       print("Verify auth...")
       try:
-        password=str(verify_auth(conn,request,url,num,port))
+        verify_auth(conn,request,url,num,port)
       except NameError:
         not_found(conn,url)
     elif url=="info":
-      try:
-        del wifi_name,wifi_signal
-      except:
-        pass
+      remove()
       info_device(conn,request)
     elif url=="wifi_disconnect":
       num=0
@@ -101,10 +94,7 @@ while 1:
       num=4
       auth(conn)
     else:
-      try:
-        del wifi_name,wifi_signal
-      except:
-        pass
+      remove()
       not_found(conn,url)
     print('Close: '+str(addr))
     conn.close()
