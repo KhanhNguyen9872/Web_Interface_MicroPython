@@ -72,38 +72,6 @@ def save_settings(conn,request,url):
   print("Saved settings!")
   with open("/www/save_settings.html",'r') as f:
     send_response(conn,f.read())
-def process(conn,ssid,password):
-  if str(wifi.isconnected())=="True":
-    with open("/www/already_connect.html",'r') as f:
-      response=f.read().format(ssid,wifi.config('essid'))
-  else:
-    timeout=int(config.timeout)*4
-    print("Connecting to {}...".format(ssid))
-    wifi.active(False)
-    wifi.active(True)
-    wifi.connect(ssid,password)
-    count=0
-    while str(wifi.isconnected())=="False":
-      sleep(0.24)
-      Pin(2,Pin.IN)
-      count+=1
-      sleep(0.24)
-      Pin(2,Pin.OUT)
-      if count==timeout:
-        break
-    if int(count)==int(timeout):
-      timeout=int(timeout/4)
-      Pin(2,Pin.IN)
-      print("TIMEOUT {}s: {}".format(str(timeout),ssid))
-      with open("/www/cannot_connect.html",'r') as f:
-        response=f.read().format(ssid,str(timeout))
-    else:
-      Pin(2,Pin.OUT)
-      print("SUCCESS!")
-      write_file(ssid,password)
-      with open("/www/connected.html",'r') as f:
-        response=f.read().format(ssid,wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"/","Home")
-  return response
 def verify_auth(conn,request,url,num,port,z):
   match=search("password=([^&]*)",request)
   if match is None:
@@ -145,4 +113,3 @@ def verify_auth(conn,request,url,num,port,z):
     print("Password ERROR")
     r(1)
   return ''
-

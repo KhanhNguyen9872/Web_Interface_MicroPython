@@ -107,21 +107,3 @@ def head(name):
 def last(port):
   with open("/www/last.html",'r') as f:
     return f.read().format(str(uname()[1].upper()),str(hotspot.ifconfig()[0]),str(port))
-def wifi_scanning(conn,wifi):
-  print("Searching wifi...")
-  list_wifi_tuple=[x for x in wifi.scan()]
-  wifi_name=[x[0].decode('utf-8') for x in list_wifi_tuple]
-  wifi_signal=[x[3] for x in list_wifi_tuple]
-  wifi_hidden=[x[5] for x in list_wifi_tuple]
-  del list_wifi_tuple
-  print("Completed wifi search!")
-  with open("/www/head_find_wifi.html",'r') as f:
-    response=f.read()
-  for i in range (0,len(wifi_name),1):
-    if (wifi_hidden[i]==0):
-      with open("/www/wifi_select.html",'r') as f:
-        response+=f.read().format(wifi_name[i],wifi_signal[i],i)
-  with open("/www/button_find_wifi.html",'r') as f:
-    response+=f.read()
-  del wifi_hidden
-  return wifi_name,wifi_signal,response

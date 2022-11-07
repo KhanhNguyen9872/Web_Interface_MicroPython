@@ -3,6 +3,7 @@ import gc,config,network
 from machine import Pin,freq,reset
 freq(160000000)
 hotspot=network.WLAN(network.AP_IF)
+wifi=network.WLAN(network.STA_IF)
 try:
   print("Starting hotspot ["+config.ap_name+"]"+" ["+config.ap_password+"]")
   hotspot.config(essid=str(config.ap_name),password=str(config.ap_password),channel=int(config.ap_channel),hidden=0)
@@ -10,7 +11,6 @@ try:
 except:
   pass
 hotspot.active(True)
-gc.collect()
 z={}
 from lib import *
 from lib2 import *
@@ -59,4 +59,54 @@ def configure(conn,request,url,wifi_name,wifi_signal):
   with open("/www/selected_wifi.html",'r') as f:
     response=f.read().format(str(ssid))
   return ssid,password,response
+def process(conn,ssid,password):
+  if str(wifi.isconnected())=="True":
+    with open("/www/already_connect.html",'r') as f:
+      response=f.read().format(ssid,wifi.config('essid'))
+  else:
+    timeout=int(config.timeout)*4
+    print("Connecting to {}...".format(ssid))
+    wifi.active(False)
+    wifi.active(True)
+    wifi.connect(ssid,password)
+    count=0
+    while str(wifi.isconnected())=="False":
+      sleep(0.24)
+      Pin(2,Pin.IN)
+      count+=1
+      sleep(0.24)
+      Pin(2,Pin.OUT)
+      if count==timeout:
+        break
+    if int(count)==int(timeout):
+      timeout=int(timeout/4)
+      Pin(2,Pin.IN)
+      print("TIMEOUT {}s: {}".format(str(timeout),ssid))
+      with open("/www/cannot_connect.html",'r') as f:
+        response=f.read().format(ssid,str(timeout))
+    else:
+      Pin(2,Pin.OUT)
+      print("SUCCESS!")
+      write_file(ssid,password)
+      with open("/www/connected.html",'r') as f:
+        response=f.read().format(ssid,wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"/","Home")
+  return response
+def wifi_scanning(conn,wifi):
+  print("Searching wifi...")
+  list_wifi_tuple=[x for x in wifi.scan()]
+  wifi_name=[x[0].decode('utf-8') for x in list_wifi_tuple]
+  wifi_signal=[x[3] for x in list_wifi_tuple]
+  wifi_hidden=[x[5] for x in list_wifi_tuple]
+  del list_wifi_tuple
+  print("Completed wifi search!")
+  with open("/www/head_find_wifi.html",'r') as f:
+    response=f.read()
+  for i in range (0,len(wifi_name),1):
+    if (wifi_hidden[i]==0):
+      with open("/www/wifi_select.html",'r') as f:
+        response+=f.read().format(wifi_name[i],wifi_signal[i],i)
+  with open("/www/button_find_wifi.html",'r') as f:
+    response+=f.read()
+  del wifi_hidden
+  return wifi_name,wifi_signal,response
 car_remote_dict={"up":"print(\"up\")","down":"print(\"down\")","left":"print(\"left\")","right":"print(\"right\")","end_up":"print(\"end_up\")","end_down":"print(\"end_down\")","end_left":"print(\"end_left\")","end_right":"print(\"end_right\")"}
