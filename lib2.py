@@ -3,6 +3,27 @@ import config,network
 from os import uname
 hotspot=network.WLAN(network.AP_IF)
 port=str(config.ap_web_port)
+def h(match):
+  try:
+    id=match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!")
+  except Exception:
+    id=match.group(1).replace("%3F","?").replace("%21","!")
+  return id
+def r(n):
+  if n==0:
+    response_error(conn,"Admin password is empty!")
+  elif n==1:
+    response_error(conn,"Authentication ERROR!")
+  elif n==2:
+    response_error(conn,"Password must be [3-20] characters")
+  elif n==3:
+    response_error(conn,"Password must be [8-63] characters")
+def random():
+  l=""
+  from random import getrandbits
+  for i in range(0,5):
+    l+=str(getrandbits(10))
+  return l
 def remove():
   a=["wifi_name","wifi_signal","html","list_program","a"]
   for i in a:
@@ -23,24 +44,24 @@ def info_device(conn,request):
   print("View info request")
   request=request.decode('utf-8')
   html="""{}<pre>
-""".format(str(head("Info your request")))
-  for i in [v.strip() for v in request.replace('\r\n', ';').split(';') if v.strip()]:
-    if str(i)=="":
+""".format(head("Info your request"))
+  for i in [v.strip() for v in request.replace('\r\n',';').split(';') if v.strip()]:
+    if i=="":
       continue
     else:
       html+="""{}
-""".format(str(i))
+""".format(i)
   html+="""</pre>
-{}""".format(str(last(port)))
+{}""".format(last(port))
   send_response(conn,html)
 def auth(conn):
   print("Password required!")
   with open("/www/auth.html",'r') as f:
-    send_response(conn,str(f.read()))
+    send_response(conn,f.read())
 def show_password(conn):
   print("Show password")
   html="""{}<pre>
-""".format(str(head("Show password")))
+""".format(head("Show password"))
   file=open("/wifi.txt","r")
   count=0
   for i in file.readlines():
@@ -48,7 +69,7 @@ def show_password(conn):
       continue
     else:
       html+="""{}
-""".format(str(i))
+""".format(i)
       count+=1
   if count==0:
     html+="""No passwords are saved here
@@ -57,70 +78,35 @@ def show_password(conn):
 </body></html>"""
   send_response(conn,html)
 def not_found(conn,url):
-  print("Not found: "+str(url))
+  print("Not found: "+url)
   with open("/www/404.html",'r') as f:
-    send_response(conn,str(f.read().format(uname()[1].upper(),hotspot.ifconfig()[0],str(port))),status_code=404)
+    send_response(conn,f.read().format(uname()[1].upper(),hotspot.ifconfig()[0],str(port)),status_code=404)
 def write_file(name,password):
   with open("/wifi.txt",'r') as f:
-    temp=str(f.read()).split("\n")
-  temp2=str(str(name)+" - "+str(password))
+    temp=f.read().split("\n")
+  temp2=name+" - "+password
   if temp2 in temp:
     pass
   else:
     file=open("/wifi.txt","a",encoding='utf-8')
-    file.write(str(name)+" - "+str(password)+"\n")
+    file.write(name+" - "+password+"\n")
     file.close()
 def search_url(request):
     try:
-      url=search("(?:GET|POST) /(.*?)(?:\\?.*?)? HTTP", request).group(1).decode("utf-8").rstrip("/")
+      url=search("(?:GET|POST) /(.*?)(?:\\?.*?)? HTTP",request).group(1).decode("utf-8").rstrip("/")
     except Exception:
-      url=search("(?:GET|POST) /(.*?)(?:\\?.*?)? HTTP", request).group(1).rstrip("/")
+      url=search("(?:GET|POST) /(.*?)(?:\\?.*?)? HTTP",request).group(1).rstrip("/")
     return url
-def configure(conn,request,url,wifi_name,wifi_signal):
-  id=int(-1)
-  match=search("ssid=([^&]*)",request)
-  if match is None:
-    not_found(conn,url)
-    return False
-  try:
-    id=int(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
-  except Exception:
-    id=int(match.group(1).replace("%3F","?").replace("%21","!"))
-  if id==int(-1):
-    not_found(conn,url)
-    return False
-  match=search("password=([^&]*)",request)
-  if match is None:
-    not_found(conn,url)
-    return False
-  try:
-    password=str(match.group(1).decode("utf-8").replace("%3F","?").replace("%21","!"))
-  except Exception:
-    password=str(match.group(1).replace("%3F","?").replace("%21","!"))
-  if (str(password)=="") or (len(password)>7):
-    pass
-  else:
-    response_error(conn,"Password must be equal to or greater than 8. If your wifi is open, you must not enter the password dialog")
-  try:
-    ssid=str(wifi_name[id])
-  except:
-    response_error(conn,"The SSID you selected was not found from there")
-  del id
-  print("Selected SSID: "+ssid)
-  print("Input Password: "+password)
-  with open("/www/selected_wifi.html",'r') as f:
-    response=str(f.read().format(str(ssid)))
-  return ssid,password,response
 def response_error(conn,error):
-  print(str(error))
+  print(error)
   with open("/www/error.html",'r') as f:
-    send_response(conn,str(f.read().format(str(error))))
+    send_response(conn,f.read().format(str(error)))
 def head(name):
   with open("/www/head.html",'r') as f:
-    return str(f.read().format(str(name)))
+    return f.read().format(str(name))
 def last(port):
   with open("/www/last.html",'r') as f:
-    return str(f.read().format(str(uname()[1].upper()),str(hotspot.ifconfig()[0]),str(port)))
+    return f.read().format(str(uname()[1].upper()),str(hotspot.ifconfig()[0]),str(port))
 def wifi_scanning(conn,wifi):
   print("Searching wifi...")
   list_wifi_tuple=[x for x in wifi.scan()]
@@ -130,13 +116,12 @@ def wifi_scanning(conn,wifi):
   del list_wifi_tuple
   print("Completed wifi search!")
   with open("/www/head_find_wifi.html",'r') as f:
-    response=str(f.read())
+    response=f.read()
   for i in range (0,len(wifi_name),1):
     if (wifi_hidden[i]==0):
       with open("/www/wifi_select.html",'r') as f:
-        response+=str(f.read().format(wifi_name[i],wifi_signal[i],i))
+        response+=f.read().format(wifi_name[i],wifi_signal[i],i)
   with open("/www/button_find_wifi.html",'r') as f:
-    response+=str(f.read())
+    response+=f.read()
   del wifi_hidden
   return wifi_name,wifi_signal,response
-

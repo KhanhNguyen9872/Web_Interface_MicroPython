@@ -16,33 +16,33 @@ while 1:
       continue
     url=str(search_url(request))
     try:
-      password=url.split("!")
-      if password[1]==config.admin_passmd5:
-        exec(car_remote_dict[password[0]])
+      zz=url.split("!")
+      if zz[1]==z[hotspot.ifconfig()[0]]:
+        exec(car_remote_dict[zz[0]])
         conn.close()
         continue
       else:
-        int("k")
+        int("")
     except:
       print("Accept: "+str(addr))
     print("URL: \"http://{}/{}\"".format(hotspot.ifconfig()[0],url))
     if url=="":
       if str(wifi.isconnected())=="True":
-        if ((first_boot==1) and (str(auto_connect)=="0")) or ((first_boot==1) and (str(auto_connect.upper())=="FALSE")):
+        if (first_boot==1 and auto_connect=="0") or (first_boot==1 and auto_connect.upper()=="FALSE"):
           wifi.active(False)
           first_boot=0
           wifi.active(True)
           with open("/www/not_connected.html",'r') as f:
-            response=str(f.read())
+            response=f.read()
         else:
           with open("/www/connected.html",'r') as f:
-            response=str(f.read().format(wifi.config('essid'),wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"wifi_disconnect","Disconnect"))
+            response=f.read().format(wifi.config('essid'),wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"wifi_disconnect","Disconnect")
       else:
         first_boot=0
         with open("/www/not_connected.html",'r') as f:
-          response=str(f.read())
+          response=f.read()
       with open("/www/button_homepage.html",'r') as f:
-        response+=str(f.read().format(uname()[1].upper()))
+        response+=f.read().format(uname()[1].upper())
       send_response(conn,response)
     elif url=="khanhnguyen9872":
       try:
@@ -54,8 +54,8 @@ while 1:
       wifi_name,wifi_signal,response=wifi_scanning(conn,wifi)
       send_response(conn,response)
     elif url=="process":
+      remove()
       try:
-        del wifi_name,wifi_signal
         response=process(conn,ssid,password)
         send_response(conn,response)
       except:
@@ -76,7 +76,9 @@ while 1:
       remove()
       print("Verify auth...")
       try:
-        verify_auth(conn,request,url,num,port)
+        k=verify_auth(conn,request,url,num,port,z)
+        if k!='':
+          z[hotspot.ifconfig()[0]]=k
       except NameError:
         not_found(conn,url)
     elif url=="info":
@@ -109,4 +111,4 @@ while 1:
     print("Exiting...")
     break
   except:
-    pass
+    continue
