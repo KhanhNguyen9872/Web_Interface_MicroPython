@@ -17,7 +17,7 @@ while 1:
     url=str(search_url(request))
     try:
       zz=url.split("!")
-      if zz[1]==z[hotspot.ifconfig()[0]]:
+      if zz[1]==z[str(addr[0])]:
         exec(car_remote_dict[zz[0]])
         conn.close()
         continue
@@ -76,9 +76,9 @@ while 1:
       remove()
       print("Verify auth...")
       try:
-        k=verify_auth(conn,request,url,num,port,z)
+        k=verify_auth(conn,request,url,num,port,addr,z)
         if k!='':
-          z[hotspot.ifconfig()[0]]=k
+          z[str(addr[0])]=k
       except NameError:
         not_found(conn,url)
     elif url=="info":
@@ -112,3 +112,4 @@ while 1:
     break
   except:
     continue
+

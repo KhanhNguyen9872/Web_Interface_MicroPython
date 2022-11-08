@@ -72,7 +72,7 @@ def save_settings(conn,request,url):
   print("Saved settings!")
   with open("/www/save_settings.html",'r') as f:
     send_response(conn,f.read())
-def verify_auth(conn,request,url,num,port,z):
+def verify_auth(conn,request,url,num,port,addr,z):
   match=search("password=([^&]*)",request)
   if match is None:
     r(0)
@@ -86,7 +86,7 @@ def verify_auth(conn,request,url,num,port,z):
   if password==config.admin_passmd5:
     try:
       try:
-        k=z[hotspot.ifconfig()[0]]
+        k=z[str(addr[0])]
       except:
         k=random()
       if num==0:
@@ -113,3 +113,4 @@ def verify_auth(conn,request,url,num,port,z):
     print("Password ERROR")
     r(1)
   return ''
+
