@@ -15,6 +15,7 @@ z={}
 from lib import *
 from lib2 import *
 from program import *
+from car import *
 try:
   import usocket as socket
 except:
@@ -109,4 +110,3 @@ def wifi_scanning(conn,wifi):
     response+=f.read()
   del wifi_hidden
   return wifi_name,wifi_signal,response
-car_remote_dict={"up":"print(\"up\")","down":"print(\"down\")","left":"print(\"left\")","right":"print(\"right\")","end_up":"print(\"end_up\")","end_down":"print(\"end_down\")","end_left":"print(\"end_left\")","end_right":"print(\"end_right\")"}
