@@ -1,14 +1,13 @@
 from machine import Pin
 up,down,left,right=False,False,False,False
 ## Motor (Pin)
-m1,m2=False,False
-m3,m4=False,False
+m1,m2=Pin(0,Pin.OUT),Pin(5,Pin.OUT)
 ## dict main
 car_remote_dict={
 	## touch ##
 	"up":"""up=True
-if down==True:
-  print("up+down, stop car")
+if (left==True and right==True) or down==True:
+  print("stop car")
 elif left==True:
 	print("up+left")
 elif right==True:
@@ -17,8 +16,8 @@ else:
 	print("up")
 """,
 	"down":"""down=True
-if up==True:
-  print("up+down, stop car")
+if (left==True and right==True) or up==True:
+  print("stop car")
 elif left==True:
 	print("down+left")
 elif right==True:
@@ -27,8 +26,8 @@ else:
 	print("down")
 """,
 	"left":"""left=True
-if right==True:
-  print("right+left, stop car")
+if (up==True and down==True) or right==True:
+  print("stop car")
 elif up==True:
   print("up+left")
 elif down==True:
@@ -37,8 +36,8 @@ else:
   print("left")
 """,
 	"right":"""right=True
-if left==True:
-  print("right+left, stop car")
+if (up==True and down==True) or left==True:
+  print("stop car")
 elif up==True:
   print("up+right")
 elif down==True:
@@ -49,7 +48,9 @@ else:
 	## release ##
 	"end_up":"""up=False
 print("end_up")
-if down==True:
+if left==True and right==True:
+  print("stop car")
+elif down==True:
   if left==True:
     print("down+left")
   elif right==True:
@@ -59,7 +60,9 @@ if down==True:
 """,
 	"end_down":"""down=False
 print("end_down")
-if up==True:
+if left==True and right==True:
+  print("stop car")
+elif up==True:
   if left==True:
     print("up+left")
   elif right==True:
@@ -69,7 +72,9 @@ if up==True:
 """,
 	"end_left":"""left=False
 print("end_left")
-if up==True:
+if up==True and down==True:
+  print("stop car")
+elif up==True:
   if left==True:
     print("up+left")
   elif right==True:
@@ -88,7 +93,9 @@ elif right==True:
 """,
 	"end_right":"""right=False
 print("end_right")
-if up==True:
+if up==True and down==True:
+  print("stop car")
+elif up==True:
   if left==True:
     print("up+left")
   elif right==True:
