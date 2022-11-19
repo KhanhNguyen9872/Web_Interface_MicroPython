@@ -1,115 +1,54 @@
-from machine import Pin
+from machine import Pin,PWM
+class Motor:      
+  def __init__(self,pin1,pin2,enable_pin):
+    self.pin1=pin1
+    self.pin2=pin2
+    self.enable_pin=enable_pin
+    self.min_duty=150
+    self.max_duty=1023
+  def forward(self,speed):
+    self.speed=speed
+    self.enable_pin.duty(self.duty_cycle(self.speed))
+    self.pin1.value(1)
+    self.pin2.value(0)
+  def backwards(self, speed):
+    self.speed=speed
+    self.enable_pin.duty(self.duty_cycle(self.speed))
+    self.pin1.value(0)
+    self.pin2.value(1)
+  def stop(self):
+    self.enable_pin.duty(0)
+    self.pin1.value(1)
+    self.pin2.value(1)
+  def duty_cycle(self,speed):
+   if self.speed<=0 or self.speed>100:
+    duty_cycle=0
+   else:
+    duty_cycle=int(self.min_duty+(self.max_duty-self.min_duty)*((self.speed-1)/(100-1)))
+    return duty_cycle
+## motor 1 is right, motor 2 is left
+## ENA -> D6, IN1 -> D7, IN2 -> D8
+## ENB -> D5, IN3 -> D3, IN4 -> D0
+motor1=Motor(Pin(16,Pin.OUT),Pin(0,Pin.OUT),PWM(Pin(14),15000))
+motor2=Motor(Pin(13,Pin.OUT),Pin(15,Pin.OUT),PWM(Pin(12),15000))
+speed_mt=40
 up,down,left,right=False,False,False,False
-## Motor (Pin)
-m1,m2=Pin(0,Pin.OUT),Pin(5,Pin.OUT)
-## dict main
 car_remote_dict={
-	## touch ##
-	"up":"""up=True
-if (left==True and right==True) or down==True:
-  print("stop car")
-elif left==True:
-	print("up+left")
-elif right==True:
-	print("up+right")
-else:
-	print("up")
+  ## touch ##
+  "up":"""motor1.forward(speed_mt)
+motor2.forward(speed_mt)
 """,
-	"down":"""down=True
-if (left==True and right==True) or up==True:
-  print("stop car")
-elif left==True:
-	print("down+left")
-elif right==True:
-	print("down+right")
-else:
-	print("down")
+  "down":"""motor1.backwards(speed_mt)
+motor2.backwards(speed_mt)
 """,
-	"left":"""left=True
-if (up==True and down==True) or right==True:
-  print("stop car")
-elif up==True:
-  print("up+left")
-elif down==True:
-  print("down+left")
-else:
-  print("left")
+  "left":"""motor1.forward(speed_mt+10)
+motor2.backwards(speed_mt+10)
 """,
-	"right":"""right=True
-if (up==True and down==True) or left==True:
-  print("stop car")
-elif up==True:
-  print("up+right")
-elif down==True:
-  print("down+right")
-else:
-  print("right")
+  "right":"""motor1.backwards(speed_mt+10)
+motor2.forward(speed_mt+10)
 """,
-	## release ##
-	"end_up":"""up=False
-print("end_up")
-if left==True and right==True:
-  print("stop car")
-elif down==True:
-  if left==True:
-    print("down+left")
-  elif right==True:
-    print("down+right")
-  else:
-    print("down")
-""",
-	"end_down":"""down=False
-print("end_down")
-if left==True and right==True:
-  print("stop car")
-elif up==True:
-  if left==True:
-    print("up+left")
-  elif right==True:
-    print("up+right")
-  else:
-    print("up")
-""",
-	"end_left":"""left=False
-print("end_left")
-if up==True and down==True:
-  print("stop car")
-elif up==True:
-  if left==True:
-    print("up+left")
-  elif right==True:
-    print("up+right")
-  else:
-    print("up")
-elif down==True:
-  if left==True:
-    print("down+left")
-  elif right==True:
-    print("down+right")
-  else:
-    print("down")
-elif right==True:
-  print("right")
-""",
-	"end_right":"""right=False
-print("end_right")
-if up==True and down==True:
-  print("stop car")
-elif up==True:
-  if left==True:
-    print("up+left")
-  elif right==True:
-    print("up+right")
-  else:
-    print("up")
-elif down==True:
-  if left==True:
-    print("down+left")
-  elif right==True:
-    print("down+right")
-  else:
-    print("down")
-elif left==True:
-  print("left")
+  ## release ##
+  "end":"""motor1.stop()
+motor2.stop()
 """
 }
