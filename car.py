@@ -21,21 +21,25 @@ else:
 if (left==True and right==True) or up==True:
   co.s()
 elif left==True:
-  co.l()
-elif right==True:
   co.r()
+elif right==True:
+  co.l()
 else:
   co.d()
 """,
   "l":"""left=True
 if (up==True and down==True) or right==True:
   co.s()
+elif down==True:
+  co.r()
 else:
   co.l()
 """,
   "r":"""right=True
 if (up==True and down==True) or left==True:
   co.s()
+elif down==True:
+  co.l()
 else:
   co.r()
 """,
@@ -46,9 +50,9 @@ if left==True and right==True:
   co.s()
 elif down==True:
   if left==True:
-    co.l()
-  elif right==True:
     co.r()
+  elif right==True:
+    co.l()
   else:
     co.d()
 elif left==True:
@@ -85,9 +89,9 @@ elif up==True:
     co.u()
 elif down==True:
   if left==True:
-    co.l()
-  elif right==True:
     co.r()
+  elif right==True:
+    co.l()
   else:
     co.d()
 elif right==True:
@@ -106,9 +110,9 @@ elif up==True:
     co.u()
 elif down==True:
   if left==True:
-    co.l()
-  elif right==True:
     co.r()
+  elif right==True:
+    co.l()
   else:
     co.d()
 elif left==True:
