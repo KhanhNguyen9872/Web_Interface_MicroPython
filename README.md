@@ -7,6 +7,8 @@ DEMO Web: [here](https://khanhnguyen9872.github.io/Web_Interface_MicroPython)
 
 ![README2](https://raw.githubusercontent.com/KhanhNguyen9872/Web_Interface_MicroPython/main/README2.png)
 
+![README3](https://raw.githubusercontent.com/KhanhNguyen9872/Web_Interface_MicroPython/main/README3.png)
+
 # REQUIRED
 - Flash size 4MB or up
 - Flash latest version of MicroPython (2MiB+ flash)
@@ -16,6 +18,7 @@ DEMO Web: [here](https://khanhnguyen9872.github.io/Web_Interface_MicroPython)
 /www
 /boot.py
 /car.py
+/carclass.py
 /config.py
 /lib.py
 /lib2.py
