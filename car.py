@@ -6,41 +6,42 @@ from machine import Pin,PWM
 co=remote(Motor(Pin(16,Pin.OUT),Pin(0,Pin.OUT),PWM(Pin(14),15000)),Motor(Pin(13,Pin.OUT),Pin(15,Pin.OUT),PWM(Pin(12),15000)),40)
 up,down,left,right=False,False,False,False
 car_remote_dict={
-	## touch ##
-	"u":"""up=True
+  ## touch ##
+  "u":"""up=True
 if (left==True and right==True) or down==True:
   co.s()
 elif left==True:
-	co.l()
+  co.l()
 elif right==True:
-	co.r()
+  co.r()
 else:
-	co.u()
+  co.u()
 """,
-	"d":"""down=True
+  "d":"""down=True
 if (left==True and right==True) or up==True:
   co.s()
 elif left==True:
-	co.l()
+  co.l()
 elif right==True:
-	co.r()
+  co.r()
 else:
-	co.d()
+  co.d()
 """,
-	"l":"""left=True
+  "l":"""left=True
 if (up==True and down==True) or right==True:
   co.s()
 else:
   co.l()
 """,
-	"r":"""right=True
+  "r":"""right=True
 if (up==True and down==True) or left==True:
   co.s()
 else:
   co.r()
 """,
-	## release ##
-	"eu":"""up=False
+  ## release ##
+  "eu":"""co.s()
+up=False
 if left==True and right==True:
   co.s()
 elif down==True:
@@ -50,10 +51,13 @@ elif down==True:
     co.r()
   else:
     co.d()
-else:
-  co.s()
+elif left==True:
+  co.l()
+elif right==True:
+  co.r()
 """,
-	"ed":"""down=False
+  "ed":"""co.s()
+down=False
 if left==True and right==True:
   co.s()
 elif up==True:
@@ -63,10 +67,13 @@ elif up==True:
     co.r()
   else:
     co.u()
-else:
-  co.s()
+elif left==True:
+  co.l()
+elif right==True:
+  co.r()
 """,
-	"el":"""left=False
+  "el":"""co.s()
+left=False
 if up==True and down==True:
   co.s()
 elif up==True:
@@ -85,10 +92,9 @@ elif down==True:
     co.d()
 elif right==True:
   co.r()
-else:
-  co.s()
 """,
-	"er":"""right=False
+  "er":"""co.s()
+right=False
 if up==True and down==True:
   co.s()
 elif up==True:
@@ -107,7 +113,5 @@ elif down==True:
     co.d()
 elif left==True:
   co.l()
-else:
-  co.s()
 """
 }
