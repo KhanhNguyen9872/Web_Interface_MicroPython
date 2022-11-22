@@ -22,8 +22,8 @@ except:
   import socket
 wifi.active(True)
 hotspot.active(True)
-auto_connect=str(config.auto_connect)
-first_boot=1
+a=str(config.auto_connect)
+m=1
 pass_key=0
 print("Starting web [{}:{}]".format(hotspot.ifconfig()[0],str(port)))
 try:

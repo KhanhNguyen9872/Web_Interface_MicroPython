@@ -28,9 +28,9 @@ while 1:
     print("URL: \"http://{}/{}\"".format(hotspot.ifconfig()[0],url))
     if url=="":
       if str(wifi.isconnected())=="True":
-        if (first_boot==1 and auto_connect=="0") or (first_boot==1 and auto_connect.upper()=="FALSE"):
+        if (m==1 and a=="0") or (m==1 and a.upper()=="FALSE"):
           wifi.active(False)
-          first_boot=0
+          m=0
           wifi.active(True)
           with open("/www/not_connected.html",'r') as f:
             response=f.read()
@@ -38,7 +38,7 @@ while 1:
           with open("/www/connected.html",'r') as f:
             response=f.read().format(wifi.config('essid'),wifi.ifconfig()[0],wifi.ifconfig()[1],wifi.ifconfig()[2],wifi.ifconfig()[3],"wifi_disconnect","Disconnect")
       else:
-        first_boot=0
+        m=0
         with open("/www/not_connected.html",'r') as f:
           response=f.read()
       with open("/www/button_homepage.html",'r') as f:
@@ -112,3 +112,4 @@ while 1:
     break
   except:
     continue
+

@@ -3,119 +3,119 @@ from machine import Pin,PWM
 ## motor 1 is right, motor 2 is left
 ## ENA -> D6, IN1 -> D7, IN2 -> D8
 ## ENB -> D5, IN3 -> D3, IN4 -> D0
-co=remote(Motor(Pin(16,Pin.OUT),Pin(0,Pin.OUT),PWM(Pin(14),15000)),Motor(Pin(13,Pin.OUT),Pin(15,Pin.OUT),PWM(Pin(12),15000)),40)
-up,down,left,right=False,False,False,False
+c=remote(Motor(Pin(16,Pin.OUT),Pin(0,Pin.OUT),PWM(Pin(14),15000)),Motor(Pin(13,Pin.OUT),Pin(15,Pin.OUT),PWM(Pin(12),15000)),40)
+u,d,l,r=False,False,False,False
 car_remote_dict={
   ## touch ##
-  "u":"""up=True
-if (left==True and right==True) or down==True:
-  co.s()
-elif left==True:
-  co.l()
-elif right==True:
-  co.r()
+  "u":"""u=True
+if (l==True and r==True) or d==True:
+  c.s()
+elif l==True:
+  c.l()
+elif r==True:
+  c.r()
 else:
-  co.u()
+  c.u()
 """,
-  "d":"""down=True
-if (left==True and right==True) or up==True:
-  co.s()
-elif left==True:
-  co.r()
-elif right==True:
-  co.l()
+  "d":"""d=True
+if (l==True and r==True) or u==True:
+  c.s()
+elif l==True:
+  c.r()
+elif r==True:
+  c.l()
 else:
-  co.d()
+  c.d()
 """,
-  "l":"""left=True
-if (up==True and down==True) or right==True:
-  co.s()
-elif down==True:
-  co.r()
+  "l":"""l=True
+if (u==True and d==True) or r==True:
+  c.s()
+elif d==True:
+  c.r()
 else:
-  co.l()
+  c.l()
 """,
-  "r":"""right=True
-if (up==True and down==True) or left==True:
-  co.s()
-elif down==True:
-  co.l()
+  "r":"""r=True
+if (u==True and d==True) or l==True:
+  c.s()
+elif d==True:
+  c.l()
 else:
-  co.r()
+  c.r()
 """,
   ## release ##
-  "eu":"""co.s()
-up=False
-if left==True and right==True:
-  co.s()
-elif down==True:
-  if left==True:
-    co.r()
-  elif right==True:
-    co.l()
+  "eu":"""c.s()
+u=False
+if l==True and r==True:
+  c.s()
+elif d==True:
+  if l==True:
+    c.r()
+  elif r==True:
+    c.l()
   else:
-    co.d()
-elif left==True:
-  co.l()
-elif right==True:
-  co.r()
+    c.d()
+elif l==True:
+  c.l()
+elif r==True:
+  c.r()
 """,
-  "ed":"""co.s()
-down=False
-if left==True and right==True:
-  co.s()
-elif up==True:
-  if left==True:
-    co.l()
-  elif right==True:
-    co.r()
+  "ed":"""c.s()
+d=False
+if l==True and r==True:
+  c.s()
+elif u==True:
+  if l==True:
+    c.l()
+  elif r==True:
+    c.r()
   else:
-    co.u()
-elif left==True:
-  co.l()
-elif right==True:
-  co.r()
+    c.u()
+elif l==True:
+  c.l()
+elif r==True:
+  c.r()
 """,
-  "el":"""co.s()
-left=False
-if up==True and down==True:
-  co.s()
-elif up==True:
-  if left==True:
-    co.l()
-  elif right==True:
-    co.r()
+  "el":"""c.s()
+l=False
+if u==True and d==True:
+  c.s()
+elif u==True:
+  if l==True:
+    c.l()
+  elif r==True:
+    c.r()
   else:
-    co.u()
-elif down==True:
-  if left==True:
-    co.r()
-  elif right==True:
-    co.l()
+    c.u()
+elif d==True:
+  if l==True:
+    c.r()
+  elif r==True:
+    c.l()
   else:
-    co.d()
-elif right==True:
-  co.r()
+    c.d()
+elif r==True:
+  c.r()
 """,
-  "er":"""co.s()
-right=False
-if up==True and down==True:
-  co.s()
-elif up==True:
-  if left==True:
-    co.l()
-  elif right==True:
-    co.r()
+  "er":"""c.s()
+r=False
+if u==True and d==True:
+  c.s()
+elif u==True:
+  if l==True:
+    c.l()
+  elif r==True:
+    c.r()
   else:
-    co.u()
-elif down==True:
-  if left==True:
-    co.r()
-  elif right==True:
-    co.l()
+    c.u()
+elif d==True:
+  if l==True:
+    c.r()
+  elif r==True:
+    c.l()
   else:
-    co.d()
-elif left==True:
-  co.l()
+    c.d()
+elif l==True:
+  c.l()
 """
 }
