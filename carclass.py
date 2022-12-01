@@ -37,11 +37,13 @@ class remote:
     self.m1.do(self.sp)
     self.m2.do(self.sp)
   def l(self):
-    self.m1.up(self.sp+10)
-    self.m2.do(self.sp+10)
+    self.m1.up(self.sp)
+    self.m2.do(self.sp)
   def r(self):
-    self.m1.do(self.sp+10)
-    self.m2.up(self.sp+10)
+    self.m1.do(self.sp)
+    self.m2.up(self.sp)
   def s(self):
     self.m1.st()
     self.m2.st()
+  def k(self,a):
+    self.sp=a
