@@ -7,9 +7,9 @@ a=60
 c=remote(Motor(Pin(16,Pin.OUT),Pin(0,Pin.OUT),PWM(Pin(14),15000)),Motor(Pin(13,Pin.OUT),Pin(15,Pin.OUT),PWM(Pin(12),15000)),a)
 u,d,l,r=False,False,False,False
 car_remote_dict={"kk":"""if a<90:
-  a+=5
+  a+=10
   c.k(a)""","k":"""if a>30:
-  a-=5
+  a-=10
   c.k(a)""","u":"""u=True
 if (l==True and r==True) or d==True:
   c.s()
